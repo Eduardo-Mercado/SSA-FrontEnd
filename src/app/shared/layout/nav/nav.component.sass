@@ -1,0 +1,60 @@
+
+$primaryColor:#242544
+$backgColor: #f8f6ff
+
+.ssa-nav
+  background: $primaryColor
+  min-height: 100%
+  display: flex
+  flex-direction: column
+  align-items: stretch
+  h1
+    color: $backgColor !important
+    text-align: center
+    margin: 0
+  .ssa-menu
+    margin-top: 5vh
+    ul
+      color: #fff
+      margin-left: -4.25vh
+      li
+        ul
+          margin-top: 1.2vh
+          margin-left: 0.10vh
+          li
+            margin-top: 1.3vh
+            a
+              color: white
+              text-decoration: none
+        i
+          font-size: 1.2rem
+          margin-right: 2vh
+          color: #ccb028
+        span
+          font-size: 14px
+        div
+          padding: 1vh 0
+          padding-left: 1vh
+      .ssa-selected
+        div
+          border-left: 5px solid #e5e80c
+          background: #363656
+
+  .ssa-user
+    flex-direction: row
+    justify-content: center
+    border-top: 1px solid #f8f6ff1c
+    bottom: 0.5vh
+    width: 100%
+    margin-top: auto
+    div
+      margin-left: 3.2vh
+      display: contents
+    img
+      margin-top: 1vh
+      margin-left: 1vh
+    label
+      position: absolute
+      margin-top: 3vh
+      margin-left: 1vh
+      color: $backgColor

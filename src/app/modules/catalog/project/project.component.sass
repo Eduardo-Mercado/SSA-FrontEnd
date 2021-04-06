@@ -1,0 +1,133 @@
+ul.float-menu
+  padding: 0
+  border: 1px solid #242544
+  background-color: #242544
+  visibility: hidden
+  li
+    cursor: pointer
+    color: #ccb028
+    margin: 0 1px 0 4px
+  li:hover
+    color: #ffffff !important
+
+ul.float-menu:hover
+  visibility: visible
+
+button.float-btn:active,button.float-btn:focus
+  outline: none
+
+button.float-btn:active + ul.float-menu,
+button.float-btn:focus + ul.float-menu
+  visibility: visible
+  //transition: visibility 0.3s linear,opacity 0.3s linear
+
+.listProject
+  list-style: none
+  display: flex
+  flex-wrap: wrap
+  li
+    width: 30%
+    padding: 1vh
+    .mat-card
+      background-color: #ffffff
+      .mat-card-header
+        color: #242544
+        font-weight: 600
+        .mat-card-header-action
+          position: absolute
+          right: 1px
+          button
+            border: 0
+            cursor: pointer
+      .mat-card-subtitle
+        color: #242544
+        i
+          font-size: 19px
+          color: #e5e80c
+      blockquote
+        color: #242544
+      .listUser
+        list-style: none
+        display: flex
+        order: 2
+        flex-wrap: wrap
+        background: #f1f1f1
+        padding-top: 1vh
+        padding-bottom: 1vh
+      li
+        display: block
+        width: 15%
+        img
+          border-radius: 18px
+
+button
+  background-color: #ffffff
+  color: #242544
+  i
+    font-size: 21px
+    color: #ccb028
+    background-repeat: no-repeat
+    display: inline-block
+    fill: currentColor
+    height: 24px
+    width: 24px
+    vertical-align: middle
+
+.form
+  width: 50%
+  fieldset
+    border-color: #2a2d3e3b
+    border-width: 1px
+    margin-top: 3vh
+    button.btn-default
+      margin: 0 0 1vh 0
+      border: 1px solid #2a2d3e3b
+    legend
+      font-weight: 600
+      color: #4d627b
+    table
+      width: 100%
+      border: 1px solid rgba(0,0,0,.05)
+      border-collapse: collapse
+      border-spacing: 0
+      thead
+        tr
+          width: 100%
+          font-size: 1.05em
+          font-weight: 600
+          border-bottom: 1px solid rgba(0,0,0,0.07)
+          color: #4d627b
+      th
+        font-size: 1.05em
+        font-weight: 600
+        border-bottom: 1px solid rgba(0,0,0,0.07)
+        border-color: rgba(0,0,0,.04)
+        color: #4d627b
+        border-left: 1px solid #ddd
+        padding: 0.7vh
+        line-height: 2vh
+        vertical-align: middle
+
+      td
+        border-top: 1px solid rgba(0,0,0,0.07)
+        line-height: 1.42857143
+        border-color: rgba(0,0,0,.04)
+        border-left: 1px solid #ddd
+        padding: 2vh
+        vertical-align: middle
+        color: #7a878e
+        label
+          display: block
+          i
+            font-size: 2.2vh
+            color: #e32d2d
+            text-align: center
+            display: block
+
+  .mat-card-header
+    border-bottom: 1px solid #f8f8f8
+
+  .mat-icon-button
+    top: -1vh !important
+  .mat-card-actions
+    padding: 0 3vh 0 2vh

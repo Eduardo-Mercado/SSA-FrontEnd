@@ -1,0 +1,185 @@
+<mat-card *ngIf="showData === true">
+  <mat-card-header>
+    <div>
+      <h3>
+        <span mat-flat-button (click)="BackLocation()" class="btn-info" style="float: left;"><i
+            style="font-size: 18px;cursor: pointer;" class="las la-angle-left"></i></span>
+        <span>Project :</span>
+        <span>{{projectInfo.project}}</span>
+      </h3>
+    </div>
+    <div>
+      <h3>
+        <span> {{projectInfo.startProject | date:'mediumDate'}}</span> - <span> {{projectInfo.finishProject |
+          date:'mediumDate' }}</span>
+      </h3>
+    </div>
+    <div>
+      <label>
+
+      </label>
+    </div>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="container">
+      <div class="header">
+        <h3> To Do</h3>
+      </div>
+
+      <ul>
+        <li>
+          <button mat-flat-button class="btn-success" (click)="AddActivity()"> <i class="las la-plus"></i> New Activity
+          </button>
+        </li>
+        <li *ngFor="let item of FilterActivitiesByStatus('Initialized')">
+          <mat-card>
+            <span class="bookMark"
+              [ngStyle]="{ 'background-color': this.getColorTag(item.priority)}">{{item.priority}}</span>
+            <span style="float: right;"><i class="las la-user"></i> {{item.assignedTo}}</span>
+            <mat-card-header>
+              <h4>{{item.activity}}</h4>
+            </mat-card-header>
+            <mat-card-actions>
+              <button mat-flat-button (click)="Delete(item.idActivity)"><i class="las la-trash"></i> Delete </button>
+                <button mat-flat-button (click)="Edit(item.idActivity)"><i class="las la-pencil-alt"></i> Edit</button>
+                <button mat-flat-button (click)="AddTasks(item.idActivity)"><i class="las la-list-ul"></i> Add Task</button>
+            </mat-card-actions>
+          </mat-card>
+        </li>
+      </ul>
+    </div>
+    <div class="container">
+      <div class="header">
+        <h3>In progress</h3>
+      </div>
+      <ul>
+        <li *ngFor="let item of FilterActivitiesByStatus('InPoggress')">
+          <mat-card>
+            <span class="bookMark" [ngStyle]="{ 'background-color': this.getColorTag(item.priority)}">{{item.priority}}</span>
+            <span style="float: right;"><i class="las la-user"></i> {{item.assignedTo}}</span>
+            <mat-card-header>
+              <h4>{{item.activity}}</h4>
+            </mat-card-header>
+            <mat-card-actions>
+              <button mat-flat-button (click)="SeeTasks(item.idActivity)"><i class="las la-list-ul"></i> Add Task</button>
+            </mat-card-actions>
+          </mat-card>
+        </li>
+      </ul>
+    </div>
+    <div class="container">
+      <div class="header">
+        <h3>Review</h3>
+      </div>
+      <ul>
+        <li *ngFor="let item of FilterActivitiesByStatus('PendingApproval')">
+          <mat-card>
+            <span class="bookMark" [ngStyle]="{ 'background-color': this.getColorTag(item.priority)}">{{item.priority}}</span>
+            <span style="float: right;"><i class="las la-user"></i> {{item.assignedTo}}</span>
+            <mat-card-header>
+              <h4>{{item.activity}}</h4>
+            </mat-card-header>
+            <mat-card-actions>
+              <button mat-flat-button (click)="AutorizeTasks(item.idActivity)"><i class="las la-balance-scale"></i> Check in Task</button>
+            </mat-card-actions>
+          </mat-card>
+        </li>
+      </ul>
+    </div>
+    <div class="container">
+      <div class="header">
+        <h3>Done</h3>
+      </div>
+
+      <ul>
+        <li *ngFor="let item of FilterActivitiesByStatus('Authorized')">
+          <mat-card>
+            <span class="bookMark" [ngStyle]="{ 'background-color': this.getColorTag(item.priority)}">{{item.priority}}</span>
+            <span style="float: right;"><i class="las la-user"></i> {{item.assignedTo}}</span>
+            <mat-card-header>
+              <h4>{{item.activity}}</h4>
+            </mat-card-header>
+            <mat-card-actions>
+              <button mat-flat-button (click)="SeeTasks(item.idActivity)"><i class="las la-folder-open"></i> See Task</button>
+            </mat-card-actions>
+          </mat-card>
+        </li>
+      </ul>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<app-modal-popup id="ContainerActivityModal">
+  <mat-card style="width: 50em;">
+    <form [formGroup]="activityForm" (ngSubmit)="SaveActivity()">
+      <mat-card-header>
+        <h3>Activity</h3>
+      </mat-card-header>
+      <mat-card-content>
+        <div fxflex style="width: 100%;">
+          <mat-form-field fxFlex>
+            <mat-label>Title</mat-label>
+            <input [formControl]="activityForm.controls.title" matInput placeholder="" value="" autocomplete="off">
+            <mat-error
+              *ngIf="activityForm.controls['title'].invalid && (activityForm.controls['title'].dirty || activityForm.controls['title'].touched)">
+              Title Error</mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlex>
+            <mat-label>Description</mat-label>
+            <textarea [formControl]="activityForm.controls['description']" matTextareaAutosize matAutosizeMinRows=3
+              matAutosizeMaxRows=5 matInput placeholder="Brief description of the activity"></textarea>
+            <mat-error
+              *ngIf="activityForm.controls['description'] && (activityForm.controls['description'].dirty || activityForm.controls['description'].touched)">
+              Description Error</mat-error>
+          </mat-form-field>
+
+          <div style="display: flex;">
+            <mat-form-field appearance="fill" style="left: -1vh;">
+              <mat-label>Start Activity</mat-label>
+              <input [formControl]="activityForm.controls['start']" autocomplete="off" matInput
+                [matDatepicker]="pickerStart">
+              <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
+              <mat-datepicker #pickerStart></mat-datepicker>
+              <mat-error
+                *ngIf="activityForm.controls['start'].invalid && ( activityForm.controls['start'].dirty || activityForm.controls['start'].touched )">
+                Start Date Error</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" style="float: right; right: -1vh;">
+              <mat-label>End Activity</mat-label>
+              <input [formControl]="activityForm.controls['finish']" matInput [matDatepicker]="pickerEnd"
+                autocomplete="off">
+              <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
+              <mat-datepicker #pickerEnd></mat-datepicker>
+              <mat-error
+                *ngIf="activityForm.controls['finish'].invalid && (activityForm.controls['finish'].dirty || activityForm.controls['finish'].touched)">
+                End Date Error </mat-error>
+              <mat-error *ngIf="activityForm.controls['finish'].hasError('mustGreatest')">
+                End date activity must be greatest than start date activity
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field fxFlex>
+            <mat-label>Assigned to</mat-label>
+            <mat-select formControlName='assignTo'>
+              <mat-option *ngFor="let coworker of listTeamProject" [value]="coworker.id">{{coworker.value}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field fxFlex>
+            <mat-label>Priority</mat-label>
+            <mat-select formControlName='priority'>
+              <mat-option *ngFor="let category of listCategory" [value]="category.id">{{category.value}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-flat-button type="button" class="btn-default" (click)="CloseModal()">Close</button>
+        <button mat-flat-button class="btn-success" [disabled]="!activityForm.valid">Save</button>
+      </mat-card-actions>
+    </form>
+  </mat-card>
+</app-modal-popup>

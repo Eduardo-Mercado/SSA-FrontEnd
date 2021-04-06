@@ -1,0 +1,14 @@
+
+  <div class="ssa-notificationContainer" *ngIf="noti.ShowNotification" >
+    <div class="ssa-notification">
+      <div class="ssa-notificationHeader">
+        <i class="{{noti.IconClass}}"></i>
+      </div>
+      <div class="ssa-notificationContent">
+          <p>{{noti.Message}}</p>
+        </div>
+      <div class="ssa-notificationAction">
+        <button mat-flat-button class="btn-success" (click)="hide_event()">Ok</button>
+      </div>
+    </div>
+  </div>

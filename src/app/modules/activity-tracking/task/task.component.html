@@ -1,0 +1,193 @@
+<mat-card *ngIf="showData === true">
+  <mat-card-header>
+    <div>
+      <h3 style="text-align: justify;">
+        <span mat-flat-button class="btn-info" (click)="BackLocation()" style="float: left;margin-right: 0.5em;cursor: pointer;"><i style="font-size: 18px;"
+            class="las la-angle-left"></i></span>
+        {{info.activity}}
+      </h3>
+    </div>
+    <div>
+      <h3>
+        <span>{{info.startActivity | date:'mediumDate' }} </span> - <span> {{info.endActivity | date:'mediumDate'
+          }}</span>
+      </h3>
+    </div>
+    <div>
+      <label title="Total Time Invested" class="percent" style="margin-right: 1.5vh; margin-top: 1vh; float: right;">
+        {{info.timeInvested}}
+      </label>
+    </div>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="taskDetail">
+      <div class="row">
+        <h4>Activity Description</h4>
+        <p>
+          {{info.descriptionActivity}}
+        </p>
+      </div>
+      <div class="row">
+        <div class="col" style="padding-left: 2em;">
+          <div class="widget">
+            <h4> <span style="display: contents;"> <i style="font-size: 18px; color: #e5e80c;"
+                  class="las la-calendar"></i></span> Due Date</h4>
+            <span>{{info.endActivity | date:'mediumDate' }}</span>
+          </div>
+        </div>
+        <div class="col">
+          <div class="widget">
+            <h4> <span style="display: contents;"> <i style="font-size: 18px; color: #e5e80c;"
+                  class="las la-user"></i></span> Assigned To </h4>
+            <span> {{info.assignedTo}} </span>
+          </div>
+        </div>
+        <div class="col">
+          <div class="widget">
+            <h4> <span style="display: contents;"> <i style="font-size: 18px; color: #e5e80c;"
+                  class="las la-user"></i></span> Created By </h4>
+            <span> {{info.createdBy}} </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <h3>
+          <button mat-flat-button class="btn-success" *ngIf="!undeReview && !justSee" (click)="OpenModal()"> <i class="las la-plus"></i> New Task </button>
+          <button mat-flat-button class="btn-primary" *ngIf="undeReview" (click)="SaveAuthorizeChanges()" > <i class="las la-check-double"></i> Apply Change </button>
+        </h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Task</th>
+              <th>Category</th>
+              <th>Start</th>
+              <th>End</th>
+              <th>Time (hh:mm)</th>
+              <th *ngIf="!undeReview">Status</th>
+              <th *ngIf="undeReview">Autorize</th>
+              <th *ngIf="!undeReview"></th>
+              <th *ngIf="undeReview">Comments</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="info.tasks.length > 0">
+            <tr *ngFor="let task of info.tasks; let i = index">
+              <td>{{i + 1}}</td>
+              <td width="50%">
+                <div>
+                  <h5>{{task.title}}</h5>
+                  <p>{{task.description}}</p>
+                </div>
+              </td>
+              <td>
+                <span class="bookMark" [ngStyle]="{ 'background-color': this.getColorTag(task.category)}">{{task.category}}</span>
+              </td>
+              <td>
+                {{task.start | date: 'mediumDate'}}
+              </td>
+              <td>
+                {{task.end | date: 'mediumDate'}}
+              </td>
+              <td>
+                {{task.timeInvested}}
+              </td>
+              <td *ngIf="!undeReview">
+                <span class="bookMark" style="background-color: #4772bc;">{{task.status}}</span>
+              </td>
+              <td *ngIf="undeReview">
+                <mat-radio-group [(ngModel)]="task.isAutorize" aria-label="Select an option">
+                  <mat-radio-button  (change)="getChangeAutorized($event, i)" value="1">Authorize</mat-radio-button>
+                  <mat-radio-button (change)="getChangeAutorized($event, i)" value="0">Reject</mat-radio-button>
+                </mat-radio-group>
+              </td>
+              <td width="8%" *ngIf="!undeReview && !justSee">
+                 <button mat-flat-button class="btn-primary" (click)="edit(task.id)"><i class="las la-pencil-alt"></i></button>
+                 <button mat-flat-button class="btn-danger"><i class="las la-trash-alt"></i></button>
+              </td>
+              <td width="10%" *ngIf="undeReview">
+                <textarea [(ngModel)]="task.comentAutorize"  matTextareaAutosize matAutosizeMinRows=3 matAutosizeMaxRows=5 matInput
+                placeholder="Brief comment"></textarea>
+             </td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="info.tasks.length === 0">
+            <tr>
+              <td colspan="6" style="font-weight: 500; text-align: center;">
+                Data not found
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<app-modal-popup id="ContainerTaskModal">
+  <mat-card style="width: 50em;padding: 16px">
+    <form [formGroup]="taskForm" (ngSubmit)="SaveTask()">
+      <mat-card-header>
+        <h3>Task</h3>
+      </mat-card-header>
+      <mat-card-content style="background-color: initial;">
+        <div fxflex style="width: 100%;">
+          <mat-form-field fxFlex>
+            <mat-label>Title</mat-label>
+            <input [formControl]="taskForm.controls.title" matInput placeholder="" value="" autocomplete="off">
+            <mat-error *ngIf="taskForm.controls['title'].invalid && (taskForm.controls['title'].dirty || taskForm.controls['title'].touched)">Title Error</mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlex>
+            <mat-label>Description</mat-label>
+            <textarea [formControl]="taskForm.controls['description']" matTextareaAutosize matAutosizeMinRows=3 matAutosizeMaxRows=5 matInput
+              placeholder="Brief description of the task"></textarea>
+              <mat-error *ngIf="taskForm.controls['description'] && (taskForm.controls['description'].dirty || taskForm.controls['description'].touched)">Description Error</mat-error>
+          </mat-form-field>
+
+           <div style="display: flex;">
+            <mat-form-field appearance="fill" style="left: -1vh;">
+              <mat-label>Start Task</mat-label>
+              <input [formControl]="taskForm.controls['start']" autocomplete="off" matInput [matDatepicker]="pickerStart">
+              <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
+              <mat-datepicker #pickerStart></mat-datepicker>
+              <mat-error *ngIf="taskForm.controls['start'].invalid && ( taskForm.controls['start'].dirty || taskForm.controls['start'].touched )">Start Date Error</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" style="float: right; right: -1vh;">
+              <mat-label>End Task</mat-label>
+              <input [formControl]="taskForm.controls['finish']" matInput [matDatepicker]="pickerEnd" autocomplete="off">
+              <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
+              <mat-datepicker #pickerEnd></mat-datepicker>
+              <mat-error *ngIf="taskForm.controls['finish'].invalid && (taskForm.controls['finish'].dirty || taskForm.controls['finish'].touched)">End Date Error </mat-error>
+              <mat-error *ngIf="taskForm.controls['finish'].hasError('mustGreatest')">
+                End date Task must be  greatest than start date Task
+               </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>Time</mat-label>
+              <input [formControl]="taskForm.controls.timeInvested" matInput value="" placeholder="hh:mm" autocomplete="off" mask=' 00:00' >
+            </mat-form-field>
+          </div>
+          <div style="display: flex;">
+          <mat-form-field appearance="fill" style="left: -1vh; width: 50%;">
+            <mat-label>Category</mat-label>
+            <mat-select formControlName='idCategory'>
+              <mat-option *ngFor="let category of listCategory" [value]="category.id">{{category.value}}</mat-option>
+          </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="fill" style="float: right; right: -1vh; width: 50%;">
+            <mat-label>Category</mat-label>
+             <input [formControl]="taskForm.controls.progressPercent" matInput value="0.0" autocomplete="off" type="number">
+          </mat-form-field>
+        </div>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-flat-button class="btn-default" type="button" (click)="CloseModal()">Close</button>
+        <button mat-flat-button class="btn-success" [disabled] ="!taskForm.valid">Save</button>
+      </mat-card-actions>
+    </form>
+  </mat-card>
+</app-modal-popup>

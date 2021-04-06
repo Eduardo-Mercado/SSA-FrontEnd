@@ -1,0 +1,151 @@
+<div *ngIf="showForm == false">
+  <button mat-flat-button (click)="ShowForm()"> <i class="las la-plus"></i> New Project </button>
+
+  <ul class="listProject">
+    <li *ngFor="let project of projects">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title> {{project.title}}</mat-card-title>
+          <mat-card-subtitle> <i class="las la-calendar-week"></i> 01/Ener/2020 </mat-card-subtitle>
+          <div class="mat-card-header-action">
+            <div>
+              <button class="float-btn"><i class="las la-ellipsis-h"></i></button>
+                <ul class="float-menu">
+                  <li><a (click)="WatchProject(project.id)">
+                    <span>
+                      <i class="las la-eye"></i>
+                    </span>
+                  </a>
+                  </li>
+                  <li>
+                    <span>
+                      <i class="las la-pen-fancy"></i>
+                    </span>
+                  </li>
+                  <li>
+                    <span>
+                      <i class="las la-trash-alt"></i>
+                    </span>
+                  </li>
+                </ul>
+            </div>
+          </div>
+        </mat-card-header>
+        <mat-card-content>
+          <blockquote>
+            {{project.description}}
+          </blockquote>
+          <ul class="listUser">
+            <li *ngFor="let team of project.team" title="{{team.name}} - {{team.rolProject}}">
+              <img width="35" height="35"
+                src="{{team.avatar}}"
+                alt="{{team.rolProject}}">
+            </li>
+          </ul>
+        </mat-card-content>
+      </mat-card>
+    </li>
+  </ul>
+</div>
+
+<div *ngIf="showForm == true">
+  <mat-card class="form" style="margin: 0 auto;">
+    <form [formGroup]="projectForm" (ngSubmit)="SaveRecord()">
+      <mat-card-header>
+        <mat-card-title>
+          <h3> New Project </h3>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="column">
+        <mat-form-field fxFlex>
+          <mat-label>Title</mat-label>
+          <input [formControl]="projectForm.controls.title" matInput placeholder="Ex. Developer App" autocomplete="off" value="">
+          <mat-error *ngIf="projectForm.controls['title'].invalid && (projectForm.controls['title'].dirty || projectForm.controls['title'].touched)">Title Error</mat-error>
+        </mat-form-field>
+        <div>
+          <mat-form-field appearance="fill" style="left: -1vh;">
+            <mat-label>Start Project</mat-label>
+            <input [formControl]="projectForm.controls['startDate']" autocomplete="off" matInput [matDatepicker]="pickerStart">
+            <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
+            <mat-datepicker #pickerStart></mat-datepicker>
+            <mat-error *ngIf="projectForm.controls['startDate'].invalid && (projectForm.controls['startDate'].dirty || projectForm.controls['startDate'].touched )">Start Date Error</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" style="float: right; right: -1vh;">
+            <mat-label>End project</mat-label>
+            <input matInput [matDatepicker]="pickerEnd" autocomplete="off" [formControl] ="projectForm.controls['endDate']">
+            <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
+            <mat-datepicker #pickerEnd></mat-datepicker>
+            <mat-error *ngIf="projectForm.controls['endDate'].invalid && (projectForm.controls['endDate'].dirty || projectForm.controls['endDate'].touched)">End Date Error </mat-error>
+            <mat-error *ngIf="projectForm.controls['endDate'].hasError('mustGreatest')">
+              End date project must be  greatest than start date project
+             </mat-error>
+          </mat-form-field>
+        </div>
+        <mat-form-field fxFlex>
+          <mat-label>Summary</mat-label>
+          <textarea [formControl]="projectForm.controls['description']"  matTextareaAutosize matAutosizeMinRows=3 matAutosizeMaxRows=5 matInput placeholder="Brief description of the project"></textarea>
+          <mat-error *ngIf="projectForm.controls['description'].invalid && (projectForm.controls['description'].dirty || projectForm.controls['description'].touched )">Sumary Error</mat-error>
+        </mat-form-field>
+
+        <fieldset>
+          <mat-error *ngIf="projectForm.controls['teamMember'].invalid">{{dynamicError}}</mat-error>
+          <legend>
+            Team Project
+          </legend>
+          <div>
+            <button mat-flat-button class="btn-default" type="button" (click)="openModalCoworker()"> <span
+                class="las la-user-plus"></span> Coworker</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Coworker</th>
+                <th>Rol</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let element of source; let i = index;trackBy:trackByIdx">
+                <td>{{element.coworker}}</td>
+                <td>
+                  <mat-label>Select</mat-label>
+                  <mat-select [(ngModel)]="element.rol" (selectionChange)="SelectedRolCoworker()" [ngModelOptions]="{standalone: true}" [compareWith]="compareFn">
+                    <mat-option *ngFor="let rol of rolCoworkerProjectList" [value]="rol.id">{{rol.value}}</mat-option>
+                  </mat-select>
+                </td>
+                <td>
+                  <label> <i class="las la-eraser" (click)="removeTeamMember(element.coworkerId)"></i></label>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </fieldset>
+
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-flat-button class="btn-default" (click)="ReturnIndex()">Back</button>
+        <button mat-flat-button class="btn-success" type="submit" [disabled]="!projectForm.valid"> Save</button>
+      </mat-card-actions>
+    </form>
+  </mat-card>
+</div>
+<app-modal-popup id="ContainerSelectCoworker">
+  <mat-card>
+    <mat-card-header>
+      <h3>Select Coworker</h3>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-form-field fxFlex>
+        <mat-label>Coworker</mat-label>
+        <mat-select (selectionChange)="SelectedCoworker($event.value)" [(ngModel)]="selectValue">
+          <mat-option value="0">Select a coworker</mat-option>
+          <mat-option *ngFor="let item of coworkerList" [value]="item.id">{{item.value}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-flat-button class="btn-default" (click)="closeModalSelectCoworker()">Back</button>
+    </mat-card-actions>
+  </mat-card>
+</app-modal-popup>

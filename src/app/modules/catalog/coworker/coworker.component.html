@@ -1,0 +1,72 @@
+<button mat-flat-button (click)="OpenModal(-1)"> <i class="las la-plus"></i> New Coworker </button>
+
+<ul>
+  <li *ngFor="let coworker of listCoworker; let i = index">
+    <mat-card>
+      <mat-card-content>
+        <div class="action">
+          <span class="las la-pen-alt" (click)="OpenModal(i)" > </span>
+        </div>
+        <div class="user-container">
+          <img width="60" height="60" [src]="coworker.profilePicture" alt="Photo of a Shiba Inu">
+        </div>
+        <h3>{{coworker.fullName}}</h3>
+        <h5>{{coworker.position}}</h5>
+        <p>{{coworker.email}}</p>
+      </mat-card-content>
+    </mat-card>
+  </li>
+</ul>
+
+<app-modal-popup id="ContainerCoworkerForm" *ngIf="coworkerForm">
+  <mat-card id="coworkerForm">
+    <form [formGroup]="coworkerForm" (ngSubmit)="SaveRecord()">
+      <mat-card-header>
+        <h4>New Coworker</h4>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="user-container" (click)="file.click()">
+          <img width="60" height="60" [src]="coworkerRecord.profilePicture" alt="Photo of a Shiba Inu">
+          <input id="imgProfile" style="display: none;" type='file' (change)="onSelectFile($event)" #file
+            accept="image/x-png,image/gif,image/jpeg">
+            <mat-error *ngIf="coworkerForm.controls['photo'].invalid && (coworkerForm.controls['photo'].dirty || coworkerForm.controls['photo'].touched)">
+              photo error
+            </mat-error>
+        </div>
+        <div fxFlex>
+          <mat-form-field fxFlex>
+            <mat-label>Full Name</mat-label>
+            <input matInput [formControl]="coworkerForm.controls.fullName" placeholder="Ex. First name Last Name"
+              value="" autocomplete="fullName">
+            <mat-error *ngIf="coworkerForm.controls['fullName'].invalid && (coworkerForm.controls['fullName'].dirty || coworkerForm.controls['fullName'].touched)">
+              Full name error
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlex>
+            <mat-label>Position</mat-label>
+            <input matInput placeholder="Ex. Web Developer" [formControl]="coworkerForm.controls.position" value=""
+              autocomplete="position">
+            <mat-error *ngIf="coworkerForm.controls['position'].invalid && (coworkerForm.controls['position'].dirty || coworkerForm.controls['position'].touched)">
+              Position error
+            </mat-error>
+          </mat-form-field>
+
+
+          <mat-form-field fxFlex>
+            <mat-label>Email</mat-label>
+            <input matInput placeholder="Ex. firstName.lastName@enterprise.com"
+              [formControl]="coworkerForm.controls.email" value="" autocomplete="email">
+            <mat-error *ngIf="coworkerForm.controls['email'].invalid && (coworkerForm.controls['email'].dirty || coworkerForm.controls['email'].touched)">
+              email error
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-flat-button class="btn-default" (click)="CloseModal()">Back</button>
+        <button mat-flat-button class="btn-success" type="submit" [disabled]="!coworkerForm.valid"> Save</button>
+      </mat-card-actions>
+    </form>
+  </mat-card>
+</app-modal-popup>
